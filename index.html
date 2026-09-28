@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Splitter - Single Page Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .section-container {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .section-container h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button.primary-btn {
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button.primary-btn:hover {
+            background-color: #219653;
+        }
+        .error-msg { color: #e74c3c; margin-top: 5px; font-weight: bold; display: none; }
+        .success-msg { color: #27ae60; margin-top: 5px; font-weight: bold; display: none; }
+        ul.simple-list { list-style-type: none; padding: 0; }
+        ul.simple-list li { background: #f9fbfb; padding: 10px; border: 1px solid #eee; margin-bottom: 5px; border-radius: 4px; }
+        .analysis-card { background: #f4f7f6; padding: 1rem; border-left: 4px solid #3498db; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Expense Splitter Dashboard</div>
+    </header>
+
+    <main class="dashboard-container">
+        
+        <!-- 1. People / Profile -->
+        <section class="section-container" id="people-section">
+            <h2>1. Profile / People</h2>
+            <p>Add people who will be participating in the expenses.</p>
+            <form id="addPersonForm">
+                <div class="form-group">
+                    <input type="text" id="personName" placeholder="Enter person's name (e.g., Alice)" required>
+                </div>
+                <button type="submit" class="primary-btn">Add Person</button>
+            </form>
+            <div style="margin-top: 1rem;">
+                <strong>Registered People:</strong>
+                <ul id="peopleList" class="simple-list">
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Dashboard Summary -->
+        <section class="section-container" id="dashboard-summary">
+            <h2>2. Dashboard Summary</h2>
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Total Group Expenses</h3>
+                    <p class="positive" id="totalExpensesAmount">₹0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Total Groups Active</h3>
+                    <p class="negative" id="totalGroupsCount">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Creating Group -->
+        <section class="section-container" id="create-group-section">
+            <h2>3. Create Group</h2>
+            <form id="createGroupForm">
+                <div class="form-group">
+                    <label>Group Name</label>
+                    <input type="text" id="groupName" placeholder="e.g. Summer Vacation" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Members (Hold Ctrl/Cmd to select multiple. Minimum 2 required)</label>
+                    <select id="groupMembers" multiple style="height: 100px;" required>
+                    </select>
+                </div>
+                <div id="groupError" class="error-msg">Please select at least 2 members.</div>
+                <div id="groupSuccess" class="success-msg">Group created successfully!</div>
+                <button type="submit" class="primary-btn" style="margin-top: 10px;">Create Group</button>
+            </form>
+        </section>
+
+        <!-- 4. Adding Expenses -->
+        <section class="section-container" id="add-expense-section">
+            <h2>4. Add Expenses</h2>
+            <form id="addExpenseForm">
+                <div class="form-group">
+                    <label>Select Group</label>
+                    <select id="expenseGroupSelect" required>
+                        <option value="" disabled selected>Select a group first</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="expenseDesc" placeholder="e.g. Dinner" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="expenseAmount" placeholder="0.00" required min="1">
+                </div>
+                <div id="expenseSuccess" class="success-msg">Expense added successfully!</div>
+                <button type="submit" class="primary-btn" style="margin-top: 10px;">Add Expense</button>
+            </form>
+        </section>
+
+        <!-- 5. Result & Analysis -->
+        <section class="section-container" id="analysis-section">
+            <h2>5. Result & Analysis Details</h2>
+            <div id="analysisContainer">
+                <p>No groups created yet. Create a group and add expenses to see the analysis here.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Expense Splitter. All rights reserved.</p>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // State
+        const state = {
+            people: [],
+            groups: [],
+            totalExpenses: 0
+        };
+
+        // Utility function to prevent HTML injection errors
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
+        // DOM Elements
+        const addPersonForm = document.getElementById('addPersonForm');
+        const personNameInput = document.getElementById('personName');
+        const peopleList = document.getElementById('peopleList');
+        const groupMembersSelect = document.getElementById('groupMembers');
+        
+        const createGroupForm = document.getElementById('createGroupForm');
+        const expenseGroupSelect = document.getElementById('expenseGroupSelect');
+        const addExpenseForm = document.getElementById('addExpenseForm');
+        const analysisContainer = document.getElementById('analysisContainer');
+
+        const totalExpensesAmount = document.getElementById('totalExpensesAmount');
+        const totalGroupsCount = document.getElementById('totalGroupsCount');
+
+        // 1. Add Person
+        addPersonForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = escapeHTML(personNameInput.value.trim());
+            if(name && !state.people.includes(name)) {
+                state.people.push(name);
+                
+                // Update UI list
+                const li = document.createElement('li');
+                li.textContent = name;
+                peopleList.appendChild(li);
+                
+                // Update select dropdown
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                groupMembersSelect.appendChild(option);
+
+                personNameInput.value = '';
+            }
+        });
+
+        // 3. Create Group
+        createGroupForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = escapeHTML(document.getElementById('groupName').value.trim());
+            
+            // Get selected members
+            const selectedOptions = Array.from(groupMembersSelect.selectedOptions);
+            const members = selectedOptions.map(opt => opt.value);
+            
+            const err = document.getElementById('groupError');
+            const succ = document.getElementById('groupSuccess');
+            err.style.display = 'none';
+            succ.style.display = 'none';
+
+            if(members.length < 2) {
+                err.style.display = 'block';
+                return;
+            }
+
+            // Create group object
+            const newGroup = {
+                id: Date.now().toString(),
+                name: name,
+                members: members,
+                expenses: [],
+                total: 0
+            };
+            
+            state.groups.push(newGroup);
+            
+            // Update Expense Form Select
+            const opt = document.createElement('option');
+            opt.value = newGroup.id;
+            opt.textContent = newGroup.name;
+            expenseGroupSelect.appendChild(opt);
+
+            // Update Dashboard Summary
+            totalGroupsCount.textContent = state.groups.length;
+
+            succ.style.display = 'block';
+            document.getElementById('groupName').value = '';
+            groupMembersSelect.selectedIndex = -1;
+            
+            setTimeout(() => { succ.style.display = 'none'; }, 3000);
+            
+            renderAnalysis();
+        });
+
+        // 4. Add Expense
+        addExpenseForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const groupId = expenseGroupSelect.value;
+            const desc = escapeHTML(document.getElementById('expenseDesc').value.trim());
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+
+            if(!groupId) return;
+
+            // Find group and add expense
+            const group = state.groups.find(g => g.id === groupId);
+            group.expenses.push({ desc, amount });
+            group.total += amount;
+
+            // Update global state
+            state.totalExpenses += amount;
+            totalExpensesAmount.textContent = `₹${state.totalExpenses.toFixed(2)}`;
+
+            const succ = document.getElementById('expenseSuccess');
+            succ.style.display = 'block';
+            document.getElementById('expenseDesc').value = '';
+            document.getElementById('expenseAmount').value = '';
+            
+            setTimeout(() => { succ.style.display = 'none'; }, 3000);
+
+            renderAnalysis();
+        });
+
+        // 5. Render Analysis
+        function renderAnalysis() {
+            if(state.groups.length === 0) {
+                analysisContainer.innerHTML = '<p>No groups created yet. Create a group and add expenses to see the analysis here.</p>';
+                return;
+            }
+
+            analysisContainer.innerHTML = '';
+
+            state.groups.forEach(group => {
+                const card = document.createElement('div');
+                card.className = 'analysis-card';
+                
+                let expenseListHTML = group.expenses.length > 0 
+                    ? `<ul>${group.expenses.map(ex => `<li>${ex.desc}: ₹${ex.amount.toFixed(2)}</li>`).join('')}</ul>` 
+                    : '<p>No expenses added yet.</p>';
+                
+                let shareHTML = '';
+                if(group.total > 0 && group.members.length > 0) {
+                    const perPerson = (group.total / group.members.length).toFixed(2);
+                    shareHTML = `<div style="margin-top:10px; padding: 10px; background: #e8f8f5; border-radius: 4px;">
+                        <strong>Split Result:</strong><br>
+                        Total: ₹${group.total.toFixed(2)} | Divided by ${group.members.length} members<br>
+                        <em>Each person owes: ₹${perPerson}</em>
+                        <ul style="margin-top: 5px;">
+                            ${group.members.map(m => `<li>${m} owes ₹${perPerson}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+
+                card.innerHTML = `
+                    <h3>Group: ${group.name}</h3>
+                    <p><strong>Members:</strong> ${group.members.join(', ')}</p>
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
+                    <h4>Expenses:</h4>
+                    ${expenseListHTML}
+                    ${shareHTML}
+                `;
+                analysisContainer.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
