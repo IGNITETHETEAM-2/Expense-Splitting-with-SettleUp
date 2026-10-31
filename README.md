@@ -1,147 +1,112 @@
-# SplitEase - Smart Expense Splitting App
+# Expense Splitter ⚡
 
-A full-stack expense splitting application built with **React.js**, **Tailwind CSS**, **Redux Toolkit**, and **Supabase**.
+A modern, production-ready Full-Stack Java Spring Boot application with SQL database persistence for smart group expense splitting and greedy debt minimization (SettleUp algorithm).
 
-## 🚀 Features
+Built with **Java 17**, **Spring Boot 3.2.5**, **Spring Data JPA**, **H2 SQL Database**, and an ultra-modern, responsive Single-Page Dashboard featuring glassmorphic UI, dark/light themes, and real-time precision calculations.
 
-### Core Modules
-- **Authentication** - Register, Login, Logout, Forgot Password, Google Login (Supabase Auth)
-- **Group Management** - Create, Edit, Delete groups; Invite/Remove members
-- **Expense Management** - Full CRUD for expenses with category support
-- **Expense Splitting** - Equal, Exact, Percentage, and Custom splits
-- **Balance Calculation** - Real-time net balance calculation (Amount Paid - Amount Owed)
-- **SettleUp Algorithm** - Optimized transaction minimization to settle debts
-- **Dashboard** - Stats cards, monthly spending chart, category breakdown, group spending
-- **Reports** - Daily/Weekly/Monthly/Custom filters with PDF & CSV export
+---
 
-### Advanced Features
-- 🌓 Dark/Light Theme Toggle
-- 📊 Interactive Charts (Chart.js)
-- 📄 PDF Report Generation (jsPDF)
-- 📁 CSV Export
-- 🖼️ Profile Image Upload (Supabase Storage)
-- 🔄 Real-Time Updates (Supabase Realtime)
-- 🔒 Row Level Security (RLS) Policies
-- 📱 Fully Responsive Design
+## 🌟 Key Highlights & Requirements
+
+### 1. 👥 Unlimited Team Size & Members
+- **Zero team size restrictions**: Create groups with 2, 5, 10, 50, or any number of members.
+- Dynamic member chip toggles for effortless member assignment.
+- Add and manage registered people anytime with instant directory updates.
+
+### 2. 🧮 Precise Splitting Algorithms
+- **Equal Split (`Total / N`)**: Mathematically allocates equal shares with exact cent/paise remainder distribution so the sum of individual shares exactly matches the total expense down to `0.01`.
+- **Exact Amounts Split**: Assign custom exact amounts per person with a live balance validation counter preventing submission until the exact total is reached.
+- **Percentage Split (`100%`)**: Split expenses by custom percentages with live validation ensuring total equals 100% and automated penny rounding adjustment on the largest share.
+- **Shares / Ratio Split**: Split by fractional ratios (e.g., 2 shares, 1 share) for unequal consumption models.
+
+### 3. ⚖️ SettleUp Debt Simplification Algorithm
+Implements a greedy transaction minimization algorithm:
+1. Computes net balances: `Net = (Total Paid in Expenses + Settlements) - (Total Share Owed)`.
+2. Segregates participants into Debtors (`Net < 0`) and Creditors (`Net > 0`).
+3. Sorts both lists in descending order of absolute balances.
+4. Matches the largest debtor with the largest creditor to resolve the maximum possible debt in a single transaction.
+5. Generates the minimal possible number of peer-to-peer settlement transactions.
+6. **1-Click "Settle Now" Action**: Instantly records settlement payments in the SQL database and updates balances in real time.
+
+### 4. 📊 Dashboard Analytics & Export
+- Live KPI cards: Total Group Expenses, Active Groups, Registered People, Total Settled.
+- Visual category spending breakdown with progress indicators.
+- Complete transaction log with date, payer, group, and category.
+- **CSV Export**: Download complete expense audit trails in one click.
+- **Printable Reports**: Formatted print layout for expense receipts and summaries.
+
+---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React.js 18 |
-| Styling | Tailwind CSS 3 |
-| State Management | Redux Toolkit |
-| Routing | React Router v6 |
-| Charts | Chart.js + react-chartjs-2 |
-| Backend | Supabase (BaaS) |
-| Database | PostgreSQL (Supabase) |
-| Auth | Supabase Auth |
-| Storage | Supabase Storage |
+| Component | Technology |
+|-----------|------------|
+| **Backend Framework** | Java 17, Spring Boot 3.2.5 |
+| **Persistence / SQL Database** | Spring Data JPA, Hibernate, H2 Database (File Persistent) |
+| **REST APIs** | Spring Web MVC, Jackson JSON, Bean Validation |
+| **Frontend** | Modern Vanilla HTML5, CSS3 Custom Properties, Vanilla JavaScript |
+| **Styling & Aesthetics** | Glassmorphism, Google Fonts (Plus Jakarta Sans & JetBrains Mono), Dark/Light Modes |
+| **Build & Tooling** | Apache Maven 3.9.6 |
 
-## 📁 Project Structure
+---
 
-```
-src/
-├── components/
-│   ├── auth/
-│   │   └── ProtectedRoute.jsx
-│   ├── layout/
-│   │   ├── Layout.jsx
-│   │   └── Navbar.jsx
-│   └── ui/
-│       ├── EmptyState.jsx
-│       ├── LoadingSpinner.jsx
-│       └── Modal.jsx
-├── lib/
-│   └── supabase.js
-├── pages/
-│   ├── auth/
-│   │   ├── Login.jsx
-│   │   ├── Register.jsx
-│   │   └── ForgotPassword.jsx
-│   ├── groups/
-│   │   ├── Groups.jsx
-│   │   └── GroupDetails.jsx
-│   ├── expenses/
-│   │   ├── Expenses.jsx
-│   │   ├── AddExpense.jsx
-│   │   └── EditExpense.jsx
-│   ├── Dashboard.jsx
-│   ├── Settlements.jsx
-│   ├── Reports.jsx
-│   ├── Profile.jsx
-│   └── Settings.jsx
-├── store/
-│   ├── index.js
-│   └── slices/
-│       ├── authSlice.js
-│       ├── groupSlice.js
-│       ├── expenseSlice.js
-│       ├── settlementSlice.js
-│       └── themeSlice.js
-├── utils/
-│   ├── splitCalculator.js
-│   ├── settleUp.js
-│   └── exportUtils.js
-├── App.jsx
-├── main.jsx
-└── index.css
+## 🚀 Running the Project Locally
+
+### Prerequisites
+- Java 17+
+- Maven 3.8+
+
+### Step 1: Run with Maven
+```powershell
+mvn spring-boot:run
 ```
 
-## ⚡ Setup Instructions
-
-### 1. Supabase Setup
-1. Create a project at [supabase.com](https://supabase.com)
-2. Go to **SQL Editor** and run the schema from `supabase/schema.sql`
-3. Enable **Google OAuth** in Authentication > Providers (optional)
-4. Copy your project URL and anon key
-
-### 2. Environment Variables
-Create a `.env` file:
-```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
+Or run the packaged JAR:
+```powershell
+java -jar target/expense-splitter-1.0.0.jar
 ```
 
-### 3. Install & Run
-```bash
-npm install
-npm run dev
+### Step 2: Open in Browser
+Open your browser and navigate to:
+```
+http://localhost:8080
 ```
 
-### 4. Build for Production
-```bash
-npm run build
-```
+### Step 3: Access H2 SQL Web Console
+To inspect the relational SQL tables directly in your browser:
+- **URL**: `http://localhost:8080/h2-console`
+- **JDBC URL**: `jdbc:h2:file:./data/expensedb`
+- **User Name**: `sa`
+- **Password**: *(leave blank)*
 
-## 📊 Database Schema
+---
 
-- **users** - User profiles
-- **groups** - Expense groups
-- **group_members** - Group membership (Admin/Member roles)
-- **expenses** - Expense records
-- **expense_shares** - Individual share amounts per expense
-- **settlements** - Payment settlement tracking
-- **categories** - Expense categories
+## 📡 REST API Endpoints
 
-## 🧮 Splitting Algorithms
+### Users
+- `GET /api/users` - List all registered members
+- `POST /api/users` - Register a new member
+- `DELETE /api/users/{id}` - Delete a member
 
-| Type | Description |
-|------|-------------|
-| Equal | `₹Amount / N members` |
-| Exact | Manual amount per person (must total to expense) |
-| Percentage | Each member gets a % (must total 100%) |
-| Custom | Free-form amounts per member |
+### Groups
+- `GET /api/groups` - List all groups with members
+- `GET /api/groups/{id}` - Get group details
+- `GET /api/groups/{id}/analysis` - Get net balances and SettleUp transaction recommendations
+- `POST /api/groups` - Create a group with any number of members
 
-## 🤝 SettleUp Algorithm
+### Expenses
+- `GET /api/expenses` - List all expenses (filter by `?groupId=`)
+- `POST /api/expenses` - Create an expense with precise split shares
+- `DELETE /api/expenses/{id}` - Delete an expense
 
-Uses a greedy matching algorithm:
-1. Calculate net balance for each member
-2. Separate debtors (negative) and creditors (positive)
-3. Sort both by amount (descending)
-4. Match highest debtor with highest creditor
-5. Create minimal settlement transactions
+### Settlements
+- `GET /api/settlements` - List recorded settlement payments
+- `POST /api/settlements` - Record a debt settlement transaction
 
-## 📝 License
+### Analytics
+- `GET /api/analytics/dashboard` - Get high-level KPI metrics & category spending
 
-This project is for educational purposes (FSD Training).
+---
+
+## 📄 License
+MIT License. Created for Full-Stack Development (FSD Training).

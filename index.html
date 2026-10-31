@@ -1,321 +1,478 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Splitter - Single Page Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .section-container {
-            background: white;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .section-container h2 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 0.5rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button.primary-btn {
-            padding: 10px 20px;
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        button.primary-btn:hover {
-            background-color: #219653;
-        }
-        .error-msg { color: #e74c3c; margin-top: 5px; font-weight: bold; display: none; }
-        .success-msg { color: #27ae60; margin-top: 5px; font-weight: bold; display: none; }
-        ul.simple-list { list-style-type: none; padding: 0; }
-        ul.simple-list li { background: #f9fbfb; padding: 10px; border: 1px solid #eee; margin-bottom: 5px; border-radius: 4px; }
-        .analysis-card { background: #f4f7f6; padding: 1rem; border-left: 4px solid #3498db; margin-bottom: 1rem; }
-    </style>
+    <title>Expense Splitter - Smart Debt Simplification & SettleUp</title>
+    <meta name="description" content="Full-stack Java Spring Boot and SQL expense splitting application with unlimited team size, precise split calculations, and greedy debt minimization.">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <div class="logo">Expense Splitter Dashboard</div>
-    </header>
+    <div class="ambient-glow"></div>
 
-    <main class="dashboard-container">
-        
-        <!-- 1. People / Profile -->
-        <section class="section-container" id="people-section">
-            <h2>1. Profile / People</h2>
-            <p>Add people who will be participating in the expenses.</p>
-            <form id="addPersonForm">
-                <div class="form-group">
-                    <input type="text" id="personName" placeholder="Enter person's name (e.g., Alice)" required>
+    <div class="app-wrapper">
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1 class="brand-title">Expense Splitter</h1>
+                    <div class="brand-tagline">Java Spring Boot &bull; SQL JPA &bull; SettleUp Algorithm</div>
                 </div>
-                <button type="submit" class="primary-btn">Add Person</button>
-            </form>
-            <div style="margin-top: 1rem;">
-                <strong>Registered People:</strong>
-                <ul id="peopleList" class="simple-list">
-                </ul>
+            </div>
+
+            <div class="header-controls">
+                <select id="currencySelector" class="currency-select" title="Choose Currency">
+                    <option value="₹" selected>₹ INR (Rupees)</option>
+                    <option value="$">$ USD (Dollars)</option>
+                    <option value="€">€ EUR (Euros)</option>
+                    <option value="£">£ GBP (Pounds)</option>
+                </select>
+
+                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode">🌙</button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs-navigation">
+            <button class="tab-btn active" data-tab="dashboard">
+                <span>📊</span> <span>Dashboard</span>
+            </button>
+            <button class="tab-btn" data-tab="people">
+                <span>👥</span> <span>People & Members</span>
+            </button>
+            <button class="tab-btn" data-tab="groups">
+                <span>🏷️</span> <span>Groups</span>
+            </button>
+            <button class="tab-btn" data-tab="expenses">
+                <span>💸</span> <span>Add & Split Expense</span>
+            </button>
+            <button class="tab-btn" data-tab="settleup">
+                <span>⚖️</span> <span>SettleUp Analysis</span>
+            </button>
+            <button class="tab-btn" data-tab="history">
+                <span>📜</span> <span>History & Reports</span>
+            </button>
+        </nav>
+
+        <!-- TAB 1: DASHBOARD -->
+        <main id="dashboard-tab" class="tab-content active">
+            <!-- Summary KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Expenses</span>
+                        <div class="kpi-icon">💰</div>
+                    </div>
+                    <div class="kpi-value" id="kpiTotalExpenses">₹0.00</div>
+                    <div class="kpi-subtitle">Across all active groups</div>
+                </div>
+
+                <div class="kpi-card accent">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Active Groups</span>
+                        <div class="kpi-icon" style="background:var(--accent-light); color:var(--accent);">🏷️</div>
+                    </div>
+                    <div class="kpi-value" id="kpiTotalGroups">0</div>
+                    <div class="kpi-subtitle">No limits on team size</div>
+                </div>
+
+                <div class="kpi-card info">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Registered People</span>
+                        <div class="kpi-icon" style="background:var(--info-bg); color:var(--info);">👥</div>
+                    </div>
+                    <div class="kpi-value" id="kpiTotalUsers">0</div>
+                    <div class="kpi-subtitle">Available participants</div>
+                </div>
+
+                <div class="kpi-card warning">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Settled</span>
+                        <div class="kpi-icon" style="background:var(--warning-bg); color:var(--warning);">✓</div>
+                    </div>
+                    <div class="kpi-value" id="kpiTotalSettled">₹0.00</div>
+                    <div class="kpi-subtitle">Resolved through SettleUp</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Content: Category Breakdown + Recent Expenses -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:1.5rem; margin-bottom:2rem;">
+                <!-- Spending by Category -->
+                <div class="card-section" style="margin-bottom:0;">
+                    <div class="section-header">
+                        <div>
+                            <h2><span>📁</span> Category Spending</h2>
+                            <p>Distribution of expenses across categories</p>
+                        </div>
+                    </div>
+                    <div id="categoryBreakdownContainer">
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Loading categories...</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Card -->
+                <div class="card-section" style="margin-bottom:0;">
+                    <div class="section-header">
+                        <div>
+                            <h2><span>⚡</span> Quick Actions</h2>
+                            <p>Fast track common splitting tasks</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                        <button class="btn btn-primary" onclick="switchTab('expenses')">
+                            <span>💸</span> Record New Expense
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchTab('settleup')">
+                            <span>⚖️</span> View SettleUp Solver & Balances
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchTab('groups')">
+                            <span>🏷️</span> Create Unlimited Member Group
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportExpensesCSV()">
+                            <span>📁</span> Export All Expenses (CSV)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Expenses Table -->
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>🕒</span> Recent Transactions</h2>
+                        <p>Latest split expenses logged across groups</p>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="switchTab('expenses')">View All</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Group</th>
+                                <th>Paid By</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentExpensesTableBody">
+                            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading transactions...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 2: PEOPLE & MEMBERS -->
+        <section id="people-tab" class="tab-content">
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>👥</span> Register New Member</h2>
+                        <p>Add people who will participate in expenses and groups. Unlimited people can be registered!</p>
+                    </div>
+                </div>
+                <form id="addPersonForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="personNameInput">Full Name *</label>
+                            <input type="text" id="personNameInput" placeholder="e.g. Alice Johnson" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="personEmailInput">Email Address (Optional)</label>
+                            <input type="email" id="personEmailInput" placeholder="e.g. alice@example.com">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span>+</span> Add Member
+                    </button>
+                </form>
+            </div>
+
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>📋</span> Registered Members Directory</h2>
+                        <p>All members ready to be added into any group</p>
+                    </div>
+                </div>
+                <div id="registeredPeopleList" class="balances-grid">
+                    <p style="color:var(--text-muted);">Loading members...</p>
+                </div>
             </div>
         </section>
 
-        <!-- 2. Dashboard Summary -->
-        <section class="section-container" id="dashboard-summary">
-            <h2>2. Dashboard Summary</h2>
-            <div class="summary-cards">
-                <div class="card">
-                    <h3>Total Group Expenses</h3>
-                    <p class="positive" id="totalExpensesAmount">₹0.00</p>
+        <!-- TAB 3: GROUPS (UNLIMITED MEMBERS) -->
+        <section id="groups-tab" class="tab-content">
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>🏷️</span> Create New Group</h2>
+                        <p>Create groups of any size without limitations on team size or members</p>
+                    </div>
                 </div>
-                <div class="card">
-                    <h3>Total Groups Active</h3>
-                    <p class="negative" id="totalGroupsCount">0</p>
+                <form id="createGroupForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="groupNameInput">Group Name *</label>
+                            <input type="text" id="groupNameInput" placeholder="e.g. Road Trip to Goa, Apartment 402, Project Team" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="groupCategorySelect">Category</label>
+                            <select id="groupCategorySelect">
+                                <option value="Travel">Travel / Vacation</option>
+                                <option value="Home">Home / Flatmates</option>
+                                <option value="Office">Office / Project Team</option>
+                                <option value="Event">Event / Party</option>
+                                <option value="Food">Food & Dining</option>
+                                <option value="General" selected>General</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="groupDescInput">Description / Purpose</label>
+                        <input type="text" id="groupDescInput" placeholder="Brief note on what this group splits">
+                    </div>
+
+                    <!-- Unlimited Member Chip Selector -->
+                    <div class="form-group">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                            <label style="margin:0;">Select Group Members (Click to toggle &bull; No team size limits) *</label>
+                            <span id="selectedMembersCountBadge" class="category-pill">0 selected</span>
+                        </div>
+                        <div class="member-selection-container">
+                            <div id="groupMemberChipsWrapper" class="member-chips-wrapper">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">
+                        <span>✓</span> Create Group
+                    </button>
+                </form>
+            </div>
+
+            <!-- Active Groups List -->
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>📂</span> Active Expense Groups</h2>
+                        <p>Manage groups, view memberships, and perform group actions</p>
+                    </div>
+                </div>
+                <div id="activeGroupsList">
+                    <p style="color:var(--text-muted);">Loading active groups...</p>
                 </div>
             </div>
         </section>
 
-        <!-- 3. Creating Group -->
-        <section class="section-container" id="create-group-section">
-            <h2>3. Create Group</h2>
-            <form id="createGroupForm">
-                <div class="form-group">
-                    <label>Group Name</label>
-                    <input type="text" id="groupName" placeholder="e.g. Summer Vacation" required>
+        <!-- TAB 4: ADD & SPLIT EXPENSES -->
+        <section id="expenses-tab" class="tab-content">
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>💸</span> Add & Split Expense</h2>
+                        <p>Accurate splitting methods: Equal, Exact amounts, Percentage %, or Ratio Shares</p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Select Members (Hold Ctrl/Cmd to select multiple. Minimum 2 required)</label>
-                    <select id="groupMembers" multiple style="height: 100px;" required>
-                    </select>
-                </div>
-                <div id="groupError" class="error-msg">Please select at least 2 members.</div>
-                <div id="groupSuccess" class="success-msg">Group created successfully!</div>
-                <button type="submit" class="primary-btn" style="margin-top: 10px;">Create Group</button>
-            </form>
-        </section>
+                <form id="addExpenseForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="expenseGroupSelect">Select Group *</label>
+                            <select id="expenseGroupSelect" required>
+                                <option value="" disabled selected>-- Select a Group --</option>
+                            </select>
+                        </div>
 
-        <!-- 4. Adding Expenses -->
-        <section class="section-container" id="add-expense-section">
-            <h2>4. Add Expenses</h2>
-            <form id="addExpenseForm">
-                <div class="form-group">
-                    <label>Select Group</label>
-                    <select id="expenseGroupSelect" required>
-                        <option value="" disabled selected>Select a group first</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <input type="text" id="expenseDesc" placeholder="e.g. Dinner" required>
-                </div>
-                <div class="form-group">
-                    <label>Amount (₹)</label>
-                    <input type="number" id="expenseAmount" placeholder="0.00" required min="1">
-                </div>
-                <div id="expenseSuccess" class="success-msg">Expense added successfully!</div>
-                <button type="submit" class="primary-btn" style="margin-top: 10px;">Add Expense</button>
-            </form>
-        </section>
+                        <div class="form-group">
+                            <label for="expensePayerSelect">Paid By *</label>
+                            <select id="expensePayerSelect" required>
+                                <option value="" disabled selected>Select a group first</option>
+                            </select>
+                        </div>
 
-        <!-- 5. Result & Analysis -->
-        <section class="section-container" id="analysis-section">
-            <h2>5. Result & Analysis Details</h2>
-            <div id="analysisContainer">
-                <p>No groups created yet. Create a group and add expenses to see the analysis here.</p>
+                        <div class="form-group">
+                            <label for="expenseDescInput">Description *</label>
+                            <input type="text" id="expenseDescInput" placeholder="e.g. Villa Booking, Seafood Dinner, Groceries" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expenseAmountInput">Total Amount *</label>
+                            <input type="number" step="0.01" min="0.01" id="expenseAmountInput" placeholder="0.00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expenseCategorySelect">Category</label>
+                            <select id="expenseCategorySelect">
+                                <option value="Food">Food & Dining</option>
+                                <option value="Travel">Travel & Transportation</option>
+                                <option value="Rent">Rent & Housing</option>
+                                <option value="Utilities">Utilities & Wifi</option>
+                                <option value="Entertainment">Entertainment & Movies</option>
+                                <option value="Shopping">Shopping & Supplies</option>
+                                <option value="General" selected>General</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Precise Splitting Controls -->
+                    <div class="form-group">
+                        <label>Choose Splitting Method</label>
+                        <div class="split-type-selector">
+                            <button type="button" class="split-type-btn active" data-type="EQUAL">
+                                <span>⚖️</span> Equal Split
+                            </button>
+                            <button type="button" class="split-type-btn" data-type="EXACT">
+                                <span>🎯</span> Exact Amounts
+                            </button>
+                            <button type="button" class="split-type-btn" data-type="PERCENTAGE">
+                                <span>%</span> Percentage
+                            </button>
+                            <button type="button" class="split-type-btn" data-type="SHARES">
+                                <span>🔢</span> By Shares
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Split Shares Live Box -->
+                    <div class="split-shares-box">
+                        <div id="splitSummaryBar" class="split-summary-bar valid" style="display:none;">
+                            <span>Ready</span>
+                        </div>
+                        <div id="splitSharesInputsContainer">
+                            <p style="color:var(--text-muted); font-size:0.85rem;">Select a group and enter amount to configure split shares.</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span>+</span> Record & Split Expense
+                    </button>
+                </form>
             </div>
         </section>
 
-    </main>
+        <!-- TAB 5: SETTLE UP & ANALYSIS -->
+        <section id="settleup-tab" class="tab-content">
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>⚖️</span> SettleUp Debt Simplification & Balances</h2>
+                        <p>Greedy matching algorithm finds the minimum number of transactions needed to settle all debts</p>
+                    </div>
+                    <div style="min-width:240px;">
+                        <select id="analysisGroupSelect" class="form-group" style="margin:0;">
+                            <option value="" disabled selected>-- Select a Group --</option>
+                        </select>
+                    </div>
+                </div>
 
-    <footer>
-        <p>&copy; 2026 Expense Splitter. All rights reserved.</p>
-    </footer>
+                <!-- Group Metrics Banner -->
+                <div class="kpi-grid" style="margin-bottom:1.5rem;">
+                    <div class="kpi-card">
+                        <div class="kpi-header"><span class="kpi-title">Group Total</span></div>
+                        <div class="kpi-value" id="analysisTotalExpense">₹0.00</div>
+                    </div>
+                    <div class="kpi-card accent">
+                        <div class="kpi-header"><span class="kpi-title">Members</span></div>
+                        <div class="kpi-value" id="analysisMembersCount">0</div>
+                    </div>
+                    <div class="kpi-card info">
+                        <div class="kpi-header"><span class="kpi-title">Total Expenses</span></div>
+                        <div class="kpi-value" id="analysisExpensesCount">0</div>
+                    </div>
+                </div>
 
-    <!-- Application Logic -->
-    <script>
-        // State
-        const state = {
-            people: [],
-            groups: [],
-            totalExpenses: 0
-        };
+                <!-- Suggested Settlements (Greedy Minimization) -->
+                <div style="margin-bottom:2rem;">
+                    <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
+                        <span>💡</span> Suggested Settle-Up Transactions (Optimized)
+                    </h3>
+                    <div id="suggestedSettlementsContainer">
+                        <p style="color:var(--text-muted);">Select a group to see minimal settlement payments.</p>
+                    </div>
+                </div>
 
-        // Utility function to prevent HTML injection errors
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, tag => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-            }[tag] || tag));
-        }
+                <!-- Member-wise Net Balances -->
+                <div>
+                    <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
+                        <span>👤</span> Individual Member Balances (Amount Paid vs. Amount Owed)
+                    </h3>
+                    <div id="memberBalancesGrid" class="balances-grid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        // DOM Elements
-        const addPersonForm = document.getElementById('addPersonForm');
-        const personNameInput = document.getElementById('personName');
-        const peopleList = document.getElementById('peopleList');
-        const groupMembersSelect = document.getElementById('groupMembers');
-        
-        const createGroupForm = document.getElementById('createGroupForm');
-        const expenseGroupSelect = document.getElementById('expenseGroupSelect');
-        const addExpenseForm = document.getElementById('addExpenseForm');
-        const analysisContainer = document.getElementById('analysisContainer');
+        <!-- TAB 6: HISTORY & EXPORT -->
+        <section id="history-tab" class="tab-content">
+            <div class="card-section">
+                <div class="section-header">
+                    <div>
+                        <h2><span>📜</span> Activity & Export Reports</h2>
+                        <p>Complete audit log of expenses and settlement transactions</p>
+                    </div>
+                    <div style="display:flex; gap:0.5rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="exportExpensesCSV()">
+                            <span>📁</span> Export CSV
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="window.print()">
+                            <span>🖨️</span> Print Report
+                        </button>
+                    </div>
+                </div>
 
-        const totalExpensesAmount = document.getElementById('totalExpensesAmount');
-        const totalGroupsCount = document.getElementById('totalGroupsCount');
+                <!-- All Expenses Table -->
+                <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.75rem;">All Group Expenses</h3>
+                <div class="table-responsive" style="margin-bottom:2rem;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Group</th>
+                                <th>Paid By</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyExpensesTableBody">
+                            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading expenses...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        // 1. Add Person
-        addPersonForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = escapeHTML(personNameInput.value.trim());
-            if(name && !state.people.includes(name)) {
-                state.people.push(name);
-                
-                // Update UI list
-                const li = document.createElement('li');
-                li.textContent = name;
-                peopleList.appendChild(li);
-                
-                // Update select dropdown
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                groupMembersSelect.appendChild(option);
+                <!-- Settlement Payments Table -->
+                <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.75rem;">Recorded Debt Settlements</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Payer (From)</th>
+                                <th>Payee (To)</th>
+                                <th>Amount Settled</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historySettlementsTableBody">
+                            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading settlements...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
-                personNameInput.value = '';
-            }
-        });
+        <!-- Footer -->
+        <footer style="text-align:center; margin-top:3rem; color:var(--text-muted); font-size:0.85rem;">
+            <p>&copy; 2026 Expense Splitter &bull; Java Spring Boot Full Stack &bull; Embedded SQL Database</p>
+            <p style="margin-top:0.25rem;">Greedy Transaction Minimization &bull; Unlimited Team Size &bull; Precise Splits</p>
+        </footer>
+    </div>
 
-        // 3. Create Group
-        createGroupForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = escapeHTML(document.getElementById('groupName').value.trim());
-            
-            // Get selected members
-            const selectedOptions = Array.from(groupMembersSelect.selectedOptions);
-            const members = selectedOptions.map(opt => opt.value);
-            
-            const err = document.getElementById('groupError');
-            const succ = document.getElementById('groupSuccess');
-            err.style.display = 'none';
-            succ.style.display = 'none';
-
-            if(members.length < 2) {
-                err.style.display = 'block';
-                return;
-            }
-
-            // Create group object
-            const newGroup = {
-                id: Date.now().toString(),
-                name: name,
-                members: members,
-                expenses: [],
-                total: 0
-            };
-            
-            state.groups.push(newGroup);
-            
-            // Update Expense Form Select
-            const opt = document.createElement('option');
-            opt.value = newGroup.id;
-            opt.textContent = newGroup.name;
-            expenseGroupSelect.appendChild(opt);
-
-            // Update Dashboard Summary
-            totalGroupsCount.textContent = state.groups.length;
-
-            succ.style.display = 'block';
-            document.getElementById('groupName').value = '';
-            groupMembersSelect.selectedIndex = -1;
-            
-            setTimeout(() => { succ.style.display = 'none'; }, 3000);
-            
-            renderAnalysis();
-        });
-
-        // 4. Add Expense
-        addExpenseForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const groupId = expenseGroupSelect.value;
-            const desc = escapeHTML(document.getElementById('expenseDesc').value.trim());
-            const amount = parseFloat(document.getElementById('expenseAmount').value);
-
-            if(!groupId) return;
-
-            // Find group and add expense
-            const group = state.groups.find(g => g.id === groupId);
-            group.expenses.push({ desc, amount });
-            group.total += amount;
-
-            // Update global state
-            state.totalExpenses += amount;
-            totalExpensesAmount.textContent = `₹${state.totalExpenses.toFixed(2)}`;
-
-            const succ = document.getElementById('expenseSuccess');
-            succ.style.display = 'block';
-            document.getElementById('expenseDesc').value = '';
-            document.getElementById('expenseAmount').value = '';
-            
-            setTimeout(() => { succ.style.display = 'none'; }, 3000);
-
-            renderAnalysis();
-        });
-
-        // 5. Render Analysis
-        function renderAnalysis() {
-            if(state.groups.length === 0) {
-                analysisContainer.innerHTML = '<p>No groups created yet. Create a group and add expenses to see the analysis here.</p>';
-                return;
-            }
-
-            analysisContainer.innerHTML = '';
-
-            state.groups.forEach(group => {
-                const card = document.createElement('div');
-                card.className = 'analysis-card';
-                
-                let expenseListHTML = group.expenses.length > 0 
-                    ? `<ul>${group.expenses.map(ex => `<li>${ex.desc}: ₹${ex.amount.toFixed(2)}</li>`).join('')}</ul>` 
-                    : '<p>No expenses added yet.</p>';
-                
-                let shareHTML = '';
-                if(group.total > 0 && group.members.length > 0) {
-                    const perPerson = (group.total / group.members.length).toFixed(2);
-                    shareHTML = `<div style="margin-top:10px; padding: 10px; background: #e8f8f5; border-radius: 4px;">
-                        <strong>Split Result:</strong><br>
-                        Total: ₹${group.total.toFixed(2)} | Divided by ${group.members.length} members<br>
-                        <em>Each person owes: ₹${perPerson}</em>
-                        <ul style="margin-top: 5px;">
-                            ${group.members.map(m => `<li>${m} owes ₹${perPerson}</li>`).join('')}
-                        </ul>
-                    </div>`;
-                }
-
-                card.innerHTML = `
-                    <h3>Group: ${group.name}</h3>
-                    <p><strong>Members:</strong> ${group.members.join(', ')}</p>
-                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
-                    <h4>Expenses:</h4>
-                    ${expenseListHTML}
-                    ${shareHTML}
-                `;
-                analysisContainer.appendChild(card);
-            });
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
 </body>
 </html>
