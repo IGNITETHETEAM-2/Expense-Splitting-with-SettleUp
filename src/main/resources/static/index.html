@@ -10,139 +10,115 @@
 <body>
     <div class="ambient-glow"></div>
 
-    <div class="app-wrapper">
-        <!-- Navigation Header -->
-        <header class="app-header">
-            <div class="brand">
-                <div class="brand-icon">⚡</div>
-                <div>
-                    <h1 class="brand-title">Expense Splitter</h1>
-                    <div class="brand-tagline">Java Spring Boot &bull; SQL JPA &bull; SettleUp Algorithm</div>
-                </div>
-            </div>
+    <!-- 1. AUTH GATEWAY: First thing shown on the screen (No navigation tabs until login) -->
+    <div id="authGateway" class="auth-gateway">
+        <!-- Floating Ambient Lighting Orbs -->
+        <div class="auth-glow-orb auth-orb-1"></div>
+        <div class="auth-glow-orb auth-orb-2"></div>
+        <div class="auth-glow-orb auth-orb-3"></div>
 
-            <div class="header-controls">
-                <select id="currencySelector" class="currency-select" title="Choose Currency">
-                    <option value="₹" selected>₹ INR (Rupees)</option>
-                    <option value="$">$ USD (Dollars)</option>
-                    <option value="€">€ EUR (Euros)</option>
-                    <option value="£">£ GBP (Pounds)</option>
-                </select>
-
-                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode">🌙</button>
-
-                <!-- User Profile / Auth Action Badge -->
-                <div id="userHeaderAuth" class="user-header-auth">
-                    <button type="button" id="headerAuthBtn" class="btn btn-outline btn-sm" style="padding:0.45rem 0.85rem; font-size:0.8rem; border-radius:var(--radius-full);">
-                        <span>🔑</span> <span>Sign In</span>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <nav class="tabs-navigation">
-            <button class="tab-btn active" data-tab="account" id="accountTabBtn">
-                <span>👤</span> <span id="accountTabTitle">Login / Sign Up</span>
-            </button>
-            <button class="tab-btn" data-tab="dashboard">
-                <span>📊</span> <span>Dashboard</span>
-            </button>
-            <button class="tab-btn" data-tab="people">
-                <span>👥</span> <span>People & Members</span>
-            </button>
-            <button class="tab-btn" data-tab="groups">
-                <span>🏷️</span> <span>Groups</span>
-            </button>
-            <button class="tab-btn" data-tab="expenses">
-                <span>💸</span> <span>Add & Split Expense</span>
-            </button>
-            <button class="tab-btn" data-tab="settleup">
-                <span>⚖️</span> <span>SettleUp Analysis</span>
-            </button>
-            <button class="tab-btn" data-tab="history">
-                <span>📜</span> <span>History & Reports</span>
-            </button>
-        </nav>
-
-        <!-- TAB 0: AUTH & ACCOUNT (LOGIN / SIGN UP) -->
-        <section id="account-tab" class="tab-content active">
-            <!-- Non-authenticated View: Login & Sign Up Forms -->
-            <div id="authContainer" class="auth-container">
-                <!-- Left Hero Banner -->
-                <div class="auth-hero">
+        <div class="auth-gateway-inner">
+            <!-- Topbar with brand & theme toggle -->
+            <div class="auth-topbar">
+                <div class="brand">
+                    <div class="brand-icon">⚡</div>
                     <div>
-                        <div class="auth-badge">⚡ Secure Expense Splitting</div>
-                        <h2 class="auth-hero-title">Split Group Expenses with Total Peace of Mind.</h2>
-                        <p class="auth-hero-desc">
-                            Welcome to Expense Splitter. Manage group trips, roommate bills, and team outings with mathematically exact splits and greedy debt minimization.
+                        <h1 class="brand-title">Expense Splitter</h1>
+                        <div class="brand-tagline">Java Spring Boot &bull; SQL JPA &bull; SettleUp Algorithm</div>
+                    </div>
+                </div>
+                <button type="button" id="authThemeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode">🌙</button>
+            </div>
+
+            <!-- Main Auth Showcase Card -->
+            <div class="auth-showcase-card">
+                <!-- Left Hero Column -->
+                <div class="auth-showcase-left">
+                    <div>
+                        <div class="auth-pill-badge">✨ Instant Debt Simplification</div>
+                        <h2 class="auth-headline">Split Group Bills Without The Headache.</h2>
+                        <p class="auth-subheadline">
+                            Designed for trips, roommates, teams, and dinners. Mathematical exactness with greedy SettleUp debt minimization.
                         </p>
 
-                        <div class="auth-feature-list">
-                            <div class="auth-feature-item">
-                                <div class="auth-feature-icon">✨</div>
-                                <div class="auth-feature-text">
-                                    <h4>Unlimited Members & Custom Groups</h4>
-                                    <p>Invite any number of friends with dynamic participant selection.</p>
+                        <div class="auth-perks">
+                            <div class="auth-perk-item">
+                                <span class="auth-perk-icon">🧮</span>
+                                <div>
+                                    <strong>4 Precision Splitting Methods</strong>
+                                    <p>Equal, exact penny-balanced, percentages, and custom consumption shares.</p>
                                 </div>
                             </div>
-                            <div class="auth-feature-item">
-                                <div class="auth-feature-icon">🧮</div>
-                                <div class="auth-feature-text">
-                                    <h4>4 Splitting Methods</h4>
-                                    <p>Equal cent-balanced splits, exact sums, percentages, and custom shares.</p>
+                            <div class="auth-perk-item">
+                                <span class="auth-perk-icon">⚖️</span>
+                                <div>
+                                    <strong>Greedy SettleUp Minimization</strong>
+                                    <p>Collapses 10+ confusing multi-way debts into 2 simple direct payments.</p>
                                 </div>
                             </div>
-                            <div class="auth-feature-item">
-                                <div class="auth-feature-icon">⚖️</div>
-                                <div class="auth-feature-text">
-                                    <h4>SettleUp Algorithm</h4>
-                                    <p>Greedy debt simplification matches net balances to minimize total payments.</p>
+                            <div class="auth-perk-item">
+                                <span class="auth-perk-icon">👥</span>
+                                <div>
+                                    <strong>Unlimited Team Size</strong>
+                                    <p>Add any number of participants with zero member limits.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- 1-Click Demo Profiles -->
-                    <div class="demo-access-box">
-                        <div class="demo-access-title">
+                    <div class="auth-demo-box">
+                        <div class="auth-demo-header">
                             <span>⚡ Quick 1-Click Demo Login</span>
-                            <span style="font-size:0.75rem; color:var(--primary); font-weight:600;">Instant Access</span>
+                            <span class="auth-demo-badge">No password needed</span>
                         </div>
-                        <div class="demo-users-pills">
-                            <button type="button" class="demo-user-chip" data-demo="alex">
-                                <span class="demo-user-chip-avatar">AR</span>
-                                <span>Alex Rivera (Lead)</span>
+                        <p class="auth-demo-desc">Select a profile to instantly unlock the full dashboard:</p>
+                        <div class="auth-demo-chips">
+                            <button type="button" class="demo-chip-btn" data-demo="alex">
+                                <span class="demo-chip-avatar">AR</span>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">Alex Rivera</span>
+                                    <span class="demo-chip-role">Team Lead</span>
+                                </div>
+                                <span class="demo-chip-arrow">&rarr;</span>
                             </button>
-                            <button type="button" class="demo-user-chip" data-demo="priya">
-                                <span class="demo-user-chip-avatar" style="background:var(--accent);">PS</span>
-                                <span>Priya Sharma</span>
+                            <button type="button" class="demo-chip-btn" data-demo="priya">
+                                <span class="demo-chip-avatar" style="background:linear-gradient(135deg, #ec4899, #8b5cf6);">PS</span>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">Priya Sharma</span>
+                                    <span class="demo-chip-role">Product Designer</span>
+                                </div>
+                                <span class="demo-chip-arrow">&rarr;</span>
                             </button>
-                            <button type="button" class="demo-user-chip" data-demo="marcus">
-                                <span class="demo-user-chip-avatar" style="background:var(--info);">MV</span>
-                                <span>Marcus Vance</span>
+                            <button type="button" class="demo-chip-btn" data-demo="marcus">
+                                <span class="demo-chip-avatar" style="background:linear-gradient(135deg, #3b82f6, #06b6d4);">MV</span>
+                                <div class="demo-chip-info">
+                                    <span class="demo-chip-name">Marcus Vance</span>
+                                    <span class="demo-chip-role">Senior Engineer</span>
+                                </div>
+                                <span class="demo-chip-arrow">&rarr;</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Card: Auth Tabs & Forms -->
-                <div class="auth-card">
-                    <!-- Tab Switcher -->
-                    <div class="auth-tabs-nav">
-                        <button type="button" class="auth-tab-btn active" id="tabBtnSignIn">
+                <!-- Right Form Column -->
+                <div class="auth-showcase-right">
+                    <!-- Segmented Tab Switcher -->
+                    <div class="auth-tab-switch">
+                        <button type="button" id="tabBtnSignIn" class="auth-tab-btn active">
                             <span>🔑</span> <span>Sign In</span>
                         </button>
-                        <button type="button" class="auth-tab-btn" id="tabBtnSignUp">
+                        <button type="button" id="tabBtnSignUp" class="auth-tab-btn">
                             <span>✨</span> <span>Create Account</span>
                         </button>
                     </div>
 
                     <!-- Sign In Panel -->
-                    <div id="signInPanel" class="auth-panel active">
-                        <div class="auth-panel-header">
-                            <h3 class="auth-panel-title">Welcome Back</h3>
-                            <p class="auth-panel-subtitle">Sign in to manage your shared expenses & balances.</p>
+                    <div id="signInPanel" class="auth-form-panel active">
+                        <div class="auth-form-header">
+                            <h3>Welcome Back</h3>
+                            <p>Enter your details below to access your expenses</p>
                         </div>
 
                         <form id="signInForm">
@@ -150,7 +126,7 @@
                                 <label for="signInEmail">Email or Username</label>
                                 <div class="input-icon-wrapper">
                                     <span class="input-prefix">✉️</span>
-                                    <input type="text" id="signInEmail" class="form-control" placeholder="name@example.com or username" required autocomplete="username">
+                                    <input type="text" id="signInEmail" class="form-control" placeholder="alex@splitter.io" required autocomplete="username">
                                 </div>
                             </div>
 
@@ -158,37 +134,39 @@
                                 <label for="signInPassword">Password</label>
                                 <div class="input-icon-wrapper">
                                     <span class="input-prefix">🔒</span>
-                                    <input type="password" id="signInPassword" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+                                    <input type="password" id="signInPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
                                     <button type="button" class="input-toggle-pwd" id="toggleSignInPwdBtn" title="Show/Hide Password">👁️</button>
                                 </div>
                             </div>
 
                             <div class="auth-options-row">
-                                <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.85rem; color:var(--text-muted);">
+                                <label class="auth-remember-label">
                                     <input type="checkbox" id="signInRememberMe" checked>
                                     <span>Remember me</span>
                                 </label>
-                                <span class="auth-link" id="quickFillDemoBtn">Auto-fill Demo</span>
+                                <button type="button" class="auth-link-btn" id="quickFillDemoBtn">Auto-fill Demo</button>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-block" id="signInSubmitBtn" style="padding:0.85rem; font-size:1rem; margin-bottom:1rem;">
+                            <button type="submit" class="btn btn-primary btn-block btn-auth-submit" id="signInSubmitBtn">
                                 <span>Sign In to Dashboard</span>
                                 <span>&rarr;</span>
                             </button>
 
-                            <div style="text-align:center;">
-                                <button type="button" id="continueGuestBtn" class="btn btn-outline btn-block" style="font-size:0.88rem;">
-                                    <span>👀</span> <span>Continue as Guest / Explore Demo</span>
-                                </button>
+                            <div class="auth-guest-divider">
+                                <span>or</span>
                             </div>
+
+                            <button type="button" id="continueGuestBtn" class="btn btn-outline btn-block btn-guest">
+                                <span>👀</span> <span>Continue as Guest / Explore Demo</span>
+                            </button>
                         </form>
                     </div>
 
                     <!-- Sign Up Panel -->
-                    <div id="signUpPanel" class="auth-panel">
-                        <div class="auth-panel-header">
-                            <h3 class="auth-panel-title">Create Free Account</h3>
-                            <p class="auth-panel-subtitle">Join Expense Splitter in less than a minute.</p>
+                    <div id="signUpPanel" class="auth-form-panel">
+                        <div class="auth-form-header">
+                            <h3>Create Free Account</h3>
+                            <p>Sign up now to start splitting bills with friends</p>
                         </div>
 
                         <form id="signUpForm">
@@ -225,7 +203,7 @@
                                 <label for="signUpPassword">Password</label>
                                 <div class="input-icon-wrapper">
                                     <span class="input-prefix">🔒</span>
-                                    <input type="password" id="signUpPassword" class="form-control" placeholder="Create strong password (min 6 chars)" required autocomplete="new-password">
+                                    <input type="password" id="signUpPassword" class="form-control" placeholder="Min 6 characters" required autocomplete="new-password">
                                     <button type="button" class="input-toggle-pwd" id="toggleSignUpPwdBtn" title="Show/Hide Password">👁️</button>
                                 </div>
                                 <div class="password-strength-container">
@@ -234,7 +212,7 @@
                                     </div>
                                     <div class="password-strength-label">
                                         <span>Strength</span>
-                                        <span id="pwdStrengthText" style="font-weight:700;">Enter password</span>
+                                        <span id="pwdStrengthText">Enter password</span>
                                     </div>
                                 </div>
                             </div>
@@ -243,26 +221,81 @@
                                 <label for="signUpConfirmPassword">Confirm Password</label>
                                 <div class="input-icon-wrapper">
                                     <span class="input-prefix">🛡️</span>
-                                    <input type="password" id="signUpConfirmPassword" class="form-control" placeholder="Repeat your password" required autocomplete="new-password">
+                                    <input type="password" id="signUpConfirmPassword" class="form-control" placeholder="Re-enter password" required autocomplete="new-password">
                                 </div>
                                 <div id="pwdMatchTag" class="password-match-tag"></div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-block" id="signUpSubmitBtn" style="padding:0.85rem; font-size:1rem; margin-top:0.5rem; margin-bottom:1rem;">
-                                <span>Create Account</span>
+                            <button type="submit" class="btn btn-primary btn-block btn-auth-submit" id="signUpSubmitBtn">
+                                <span>Create Account & Continue</span>
                                 <span>🎉</span>
                             </button>
 
-                            <p style="text-align:center; font-size:0.85rem; color:var(--text-muted);">
-                                Already have an account? <span class="auth-link" id="switchToSignInLink">Sign In here</span>
+                            <p class="auth-switch-note">
+                                Already have an account? <button type="button" class="auth-link-btn" id="switchToSignInLink">Sign In here</button>
                             </p>
                         </form>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Authenticated Profile View (shown when user is logged in) -->
-            <div id="authProfileView" class="account-profile-view" style="display:none;">
+    <!-- 2. MAIN APPLICATION: Revealed ONLY after Login or Sign Up -->
+    <div id="appMainView" class="app-wrapper" style="display:none;">
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1 class="brand-title">Expense Splitter</h1>
+                    <div class="brand-tagline">Java Spring Boot &bull; SQL JPA &bull; SettleUp Algorithm</div>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <select id="currencySelector" class="currency-select" title="Choose Currency">
+                    <option value="₹" selected>₹ INR (Rupees)</option>
+                    <option value="$">$ USD (Dollars)</option>
+                    <option value="€">€ EUR (Euros)</option>
+                    <option value="£">£ GBP (Pounds)</option>
+                </select>
+
+                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode">🌙</button>
+
+                <!-- User Profile & Sign Out Controls in Header -->
+                <div id="userHeaderAuth" class="user-header-auth"></div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs (Only available once logged in) -->
+        <nav class="tabs-navigation">
+            <button class="tab-btn active" data-tab="dashboard">
+                <span>📊</span> <span>Dashboard</span>
+            </button>
+            <button class="tab-btn" data-tab="people">
+                <span>👥</span> <span>People & Members</span>
+            </button>
+            <button class="tab-btn" data-tab="groups">
+                <span>🏷️</span> <span>Groups</span>
+            </button>
+            <button class="tab-btn" data-tab="expenses">
+                <span>💸</span> <span>Add & Split Expense</span>
+            </button>
+            <button class="tab-btn" data-tab="settleup">
+                <span>⚖️</span> <span>SettleUp Analysis</span>
+            </button>
+            <button class="tab-btn" data-tab="history">
+                <span>📜</span> <span>History & Reports</span>
+            </button>
+            <button class="tab-btn" data-tab="account" id="accountTabBtn">
+                <span>👤</span> <span id="accountNavLabel">My Account</span>
+            </button>
+        </nav>
+
+        <!-- TAB 0: AUTHENTICATED PROFILE & ACCOUNT -->
+        <section id="account-tab" class="tab-content">
+            <div id="authProfileView" class="account-profile-view">
                 <div class="profile-card">
                     <div class="profile-avatar-large" id="profileLargeAvatar">AR</div>
                     <h3 class="profile-name" id="profileLargeName">Alex Rivera</h3>
@@ -278,7 +311,7 @@
                         <button type="button" class="btn btn-outline btn-block" id="profileSwitchUserBtn">
                             <span>🔄 Switch Account</span>
                         </button>
-                        <button type="button" class="btn btn-block" id="profileSignOutBtn" style="background:var(--danger-bg); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3);">
+                        <button type="button" class="btn btn-block" id="profileSignOutBtn" style="background:var(--danger-bg); color:var(--danger); border:1.5px solid rgba(239, 68, 68, 0.35);">
                             <span>🚪 Sign Out</span>
                         </button>
                     </div>
@@ -316,7 +349,7 @@
                                 <span class="kpi-title">Net Balance</span>
                                 <div class="kpi-icon" style="background:var(--info-bg); color:var(--info);">⚖️</div>
                             </div>
-                            <div class="kpi-value" id="userKpiNet">₹0.00</div>
+                            <div class="kpi-value" id="userKpiNet">Active</div>
                             <div class="kpi-subtitle" id="userKpiNetDesc">Settlement status</div>
                         </div>
                     </div>
@@ -332,7 +365,7 @@
         </section>
 
         <!-- TAB 1: DASHBOARD -->
-        <main id="dashboard-tab" class="tab-content">
+        <main id="dashboard-tab" class="tab-content active">
             <!-- Summary KPI Cards -->
             <div class="kpi-grid">
                 <div class="kpi-card">

@@ -297,11 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initAuthEventListeners();
   loadAllData();
 
-  // If user is already logged in, navigate to dashboard by default
   if (currentUser) {
     switchTab('dashboard');
-  } else {
-    switchTab('account');
   }
 });
 
@@ -309,9 +306,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function initTheme() {
   document.documentElement.setAttribute('data-theme', state.theme);
   const themeBtn = document.getElementById('themeToggleBtn');
-  if (themeBtn) {
-    themeBtn.textContent = state.theme === 'dark' ? '☀️' : '🌙';
-  }
+  const authThemeBtn = document.getElementById('authThemeToggleBtn');
+  const icon = state.theme === 'dark' ? '☀️' : '🌙';
+  if (themeBtn) themeBtn.textContent = icon;
+  if (authThemeBtn) authThemeBtn.textContent = icon;
 }
 
 function toggleTheme() {
@@ -319,9 +317,10 @@ function toggleTheme() {
   localStorage.setItem('theme', state.theme);
   document.documentElement.setAttribute('data-theme', state.theme);
   const themeBtn = document.getElementById('themeToggleBtn');
-  if (themeBtn) {
-    themeBtn.textContent = state.theme === 'dark' ? '☀️' : '🌙';
-  }
+  const authThemeBtn = document.getElementById('authThemeToggleBtn');
+  const icon = state.theme === 'dark' ? '☀️' : '🌙';
+  if (themeBtn) themeBtn.textContent = icon;
+  if (authThemeBtn) authThemeBtn.textContent = icon;
 }
 
 // Tab Navigation
@@ -353,15 +352,20 @@ function switchTab(tabId) {
 // 3. Authentication & Account Management
 // ---------------------------------------------------------------------------
 function initAuth() {
+  const authGateway = document.getElementById('authGateway');
+  const appMainView = document.getElementById('appMainView');
   const headerAuth = document.getElementById('userHeaderAuth');
-  const accountTabTitle = document.getElementById('accountTabTitle');
-  const authContainer = document.getElementById('authContainer');
-  const authProfileView = document.getElementById('authProfileView');
+  const accountNavLabel = document.getElementById('accountNavLabel');
 
   if (currentUser) {
+    // Hide auth gateway completely, reveal main application with navigation tabs
+    if (authGateway) authGateway.style.display = 'none';
+    if (appMainView) appMainView.style.display = 'block';
+
+    // Populate user profile pill & sign out button in main header
     if (headerAuth) {
       headerAuth.innerHTML = `
-        <div class="user-profile-pill" id="headerProfilePill" title="View Profile">
+        <div class="user-profile-pill" id="headerProfilePill" title="View Account Profile">
           <div class="user-avatar-circle">${escapeHTML(currentUser.initials || currentUser.name.charAt(0))}</div>
           <div class="user-pill-info">
             <span class="user-pill-name">${escapeHTML(currentUser.name.split(' ')[0])}</span>
@@ -376,36 +380,19 @@ function initAuth() {
       document.getElementById('headerLogoutBtn')?.addEventListener('click', handleSignOut);
     }
 
-    if (accountTabTitle) {
-      accountTabTitle.textContent = `Account (${currentUser.name.split(' ')[0]})`;
+    if (accountNavLabel) {
+      accountNavLabel.textContent = `Account (${currentUser.name.split(' ')[0]})`;
     }
 
-    if (authContainer) authContainer.style.display = 'none';
-    if (authProfileView) {
-      authProfileView.style.display = 'grid';
-      updateProfileViewDetails();
-    }
+    updateProfileViewDetails();
   } else {
-    if (headerAuth) {
-      headerAuth.innerHTML = `
-        <button type="button" id="headerSignInBtn" class="btn btn-outline btn-sm" style="padding:0.45rem 0.85rem; font-size:0.8rem; border-radius:var(--radius-full);">
-          <span>🔑</span> <span>Sign In</span>
-        </button>
-      `;
-      document.getElementById('headerSignInBtn')?.addEventListener('click', () => switchTab('account'));
-    }
-
-    if (accountTabTitle) {
-      accountTabTitle.textContent = 'Login / Sign Up';
-    }
-
-    if (authContainer) authContainer.style.display = 'grid';
-    if (authProfileView) authProfileView.style.display = 'none';
+    // User is NOT logged in: Show ONLY Auth Gateway, hide all tabs & main app!
+    if (authGateway) authGateway.style.display = 'flex';
+    if (appMainView) appMainView.style.display = 'none';
   }
 }
 
 function updateAccountView() {
-  initAuth();
   if (currentUser) {
     updateProfileViewDetails();
   }
@@ -451,9 +438,8 @@ function updateProfileViewDetails() {
 function handleSignOut() {
   currentUser = null;
   localStorage.removeItem('fsd_current_user');
-  showToast('You have been signed out.', 'info');
+  showToast('You have been signed out. Please sign in to continue.', 'info');
   initAuth();
-  switchTab('account');
 }
 
 function initAuthEventListeners() {
@@ -508,7 +494,7 @@ function initAuthEventListeners() {
   });
 
   // 1-Click Demo Profile Login Chips
-  document.querySelectorAll('.demo-user-chip').forEach(chip => {
+  document.querySelectorAll('.demo-chip-btn, .demo-user-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const demoKey = chip.dataset.demo;
       let targetUser = DEMO_USERS[0];
@@ -663,9 +649,19 @@ function initAuthEventListeners() {
     switchTab('dashboard');
   });
 
-  // Continue as Guest Button
+  // Continue as Guest Button (Unlocks main application)
   document.getElementById('continueGuestBtn')?.addEventListener('click', () => {
-    showToast('Exploring in Demo Guest Mode. You can sign in anytime!', 'info');
+    currentUser = {
+      id: 999,
+      name: 'Guest Explorer',
+      email: 'guest@splitter.io',
+      role: 'Guest Member',
+      initials: 'GE',
+      currency: state.currency
+    };
+    localStorage.setItem('fsd_current_user', JSON.stringify(currentUser));
+    showToast('Welcome, Guest Explorer! Dashboard unlocked. 🚀', 'success');
+    initAuth();
     switchTab('dashboard');
   });
 
